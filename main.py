@@ -1,5 +1,5 @@
 import pygame
-from Player import player
+from player import player
 from sol import sol
 import sys
 
@@ -71,16 +71,17 @@ class jeu:
                 print("game over")
                 self.player.estMort = True
                 self.vitesseJoueurX = 0
-                sys.exit() 
+                sys.exit()
          
             # fonction d'appel du saut sous condtions
-            if self.player.colision and self.player.aSauter and self.player.nbsaut<1:
+            if self.player.colision and self.player.aSauter and self.player.nbsaut<2:
                 self.player.sauter()
             
             # Appels des fonctions
             self.player.move(self.vitesseJoueurX)
             self.gravite_jeu()
-            self.player.rect.clamp_ip(self.rect)
+            self.player.rect.clamp_ip(  self.rect)
+            self.enemie.rect.clamp_ip(self.rect)
             self.ecran.fill((0,0,0))
             self.player.afficher(self.ecran,(255,255,255))
             self.enemie.movementenemi(        )

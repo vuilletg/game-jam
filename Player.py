@@ -40,13 +40,12 @@ class player(pygame.sprite.Sprite):
                 self.saut_decente = 7
                 self.aSauter = False
 
-        self.rect.y= self.rect.y -(7*(self.saut/1.5))
-    def movementenemi(self):
+        self.rect.y= self.rect.y -(6*(self.saut/1.5))
+    def movement(self):
         if self.deplacement_enemi <-100 or self.deplacement_enemi >100:
             self.vitesse_enmei*=-1
         self.rect.x +=self.vitesse_enmei
         self.deplacement_enemi +=self.vitesse_enmei
-        print(self.vitesse_enmei)
 
     def __del__(self):
         print("destruction du joueur")
