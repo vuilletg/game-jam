@@ -2,6 +2,7 @@ import pygame
 import pytmx
 import pyscroll
 from player import Player
+from ennemi import Ennemi
 import sys
 
 class Jeu:
@@ -20,8 +21,7 @@ class Jeu:
         self.tailleJoueur = [32,64]
         self.vitesseJoueurX=0
         self.player = Player(self.xJoueur,self.yJoueur, self.tailleJoueur)
-
-        self.enemie = Player(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
+        self.enemie = Ennemi(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
         self.sol = pygame.Rect(0, 704, 1024, 64)
 
         self.gravite = (0,10)
@@ -56,7 +56,7 @@ class Jeu:
         button3=surf3.get_rect()
         self.ecran.blit(surf3,(362,550))
         self.ecran.blit(bouton2,(512-text.size("Crédits")[0]/2,587-text.size("Crédits")[1]/2))
-        tmx_data = pytmx.util_pygame.load_pygame('test.tmx')
+        tmx_data = pytmx.util_pygame.load_pygame('Egout.tmx')
         map_data = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.ecran.get_size())
         self.groupeCalques = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=1)
@@ -85,7 +85,7 @@ class Jeu:
         self.ecran.blit(surf3,(362,550))
         self.ecran.blit(bouton2,(512-text.size("Crédits")[0]/2,587-text.size("Crédits")[1]/2))
         pygame.display.flip()
-        tmx_data = pytmx.util_pygame.load_pygame('test.tmx')
+        tmx_data = pytmx.util_pygame.load_pygame('Egout.tmx')
 
     def gameover(self):
         self.ecran.fill((0,0,0))
@@ -148,7 +148,7 @@ class Jeu:
                             self.player.nbsaut+=1
                     # Le perssonage se deplace a droite
 
-                    if event.key == pygame.K_ESCAPE:
+                    if event.key == pygame.K_ESCAPE or event.key == pygame.K_UP:
                         self.jeu_encours = False
 
                 # evenements quand une touche est relacher
@@ -186,7 +186,7 @@ class Jeu:
                 self.player.rect.clamp_ip(self.rect)
 
                 self.player.afficher(self.ecran,(255,255,255))
-                self.enemie.movementenemi(        )
+                self.enemie.movement()
                 self.enemie.afficher(self.ecran, (255,0,0))
                 # pygame.draw.rect(self.ecran, (255,255,255), self.sol)
 
