@@ -17,12 +17,21 @@ class Jeu:
 
 
     def start(self):
-        self.xJoueur, self.yJoueur = 200,10
-        self.tailleJoueur = [32,64]
+        self.xJoueur, self.yJoueur = 200, 650
+        self.tailleJoueur = [32,32]
         self.vitesseJoueurX=0
         self.player = Player(self.xJoueur,self.yJoueur, self.tailleJoueur)
         self.enemie = Ennemi(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
         self.sol = pygame.Rect(0, 704, 1024, 64)
+        self.murg = pygame.Rect(0, 0, 32, 768)
+        self.murd = pygame.Rect(998, 0, 32, 768)
+        self.plafond = pygame.Rect(0, 0, 1024, 64)
+
+        self.plateformes = []
+        plateforme1 = pygame.Rect(320, 640, 240, 64)
+        plateforme2 = pygame.Rect(624, 516, 192, 96)
+        self.plateformes.append(plateforme1)
+        self.plateformes.append(plateforme2)
 
         self.gravite = (0,10)
         self.resistance = (0,0)
@@ -30,6 +39,8 @@ class Jeu:
         self.colision = False
         self.horloge = pygame.time.Clock()
         self.fps = 60
+
+
 
 
         # pcharger la carte tiled
@@ -59,7 +70,7 @@ class Jeu:
         tmx_data = pytmx.util_pygame.load_pygame('Egout.tmx')
         map_data = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.ecran.get_size())
-        self.groupeCalques = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=1)
+        self.groupeCalques = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=3)
         pygame.display.flip()
 
     def credits(self):
@@ -159,22 +170,9 @@ class Jeu:
                         self.vitesseJoueurX = 0
 
             if self.scene=="jeu":
-
                 # Gestion des colisions
-                if self.sol.colliderect(self.player.rect):
-                    self.player.resistance = (0, -10)
-                    self.player.colision = True
-                    self.player.nbsaut=0
-                else:
-                    self.player.resistance = (0, 0)
-                if self.sol.colliderect(self.enemie.rect):
-                    self.enemie.resistance = (0, -10)
-                    self.enemie.colision = True
-                    self.enemie.nbsaut=0
-                else:
-                    self.enemie.resistance = (0, 0)
-
-
+                self.detection_collisions(self.player)
+                self.detection_collisions(self.enemie)
 
                 # fonction d'appel du saut sous condtions
                 if self.player.colision and self.player.aSauter and self.player.nbsaut<2:
@@ -206,6 +204,44 @@ class Jeu:
     def gravite_jeu(self):
         self.player.rect.y +=self.gravite[1] + self.player.resistance[1]
         self.enemie.rect.y +=self.gravite[1] + self.enemie.resistance[1]
+
+
+    def detection_collisions(self, entite):
+        if self.sol.colliderect(entite.rect):
+            entite.resistance = (0, -10)
+            entite.colision = True
+            entite.nbsaut = 0
+        else:
+            entite.resistance = (0, 0)
+
+        # colisions avec les murs
+        if self.murg.colliderect(entite.rect):
+            self.player.rect.x = entite.right
+        if self.murd.colliderect(entite.rect):
+            entite.rect.x = self.murd.left - entite.rect.width
+
+           # collisions avec les plateformes du niveau
+        for plateforme in self.plateformes:
+            if entite.rect.colliderect(plateforme):
+                distancemin = min(abs(entite.rect.bottom - plateforme.top),
+                                  abs(entite.rect.top - plateforme.bottom),
+                                  abs(entite.rect.right - plateforme.left),
+                                  abs(entite.rect.left - plateforme.right))
+
+                if distancemin == abs(entite.rect.bottom - plateforme.top):
+                    entite.colision = True  # pour reset le(s) saut
+                    entite.nbsaut = 0
+                    entite.rect.y = plateforme.top - self.player.rect.height
+
+                elif distancemin == abs(entite.rect.top - plateforme.bottom):
+                    entite.rect.y = plateforme.bottom
+
+                elif distancemin == abs(entite.rect.right - plateforme.left):
+                    entite.rect.x = plateforme.left - self.player.rect.width
+
+                elif distancemin == abs(entite.rect.left - plateforme.right):
+                    entite.rect.x = plateforme.right
+
 
 if __name__=='__main__':
     pygame.init()
