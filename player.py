@@ -6,6 +6,7 @@ class Player(pygame.sprite.Sprite):
       super().__init__()
       self.x = x
       self.y = y
+      self.direction =0
       self.taille = taille
       self.rect = pygame.Rect(self.x, self.y, self.taille[0], self.taille[1])
       self.aSauter=False
