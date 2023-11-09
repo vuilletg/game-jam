@@ -2,6 +2,8 @@ import pygame
 import pytmx
 import pyscroll
 from player import Player
+from ennemi import Ennemi
+from camera import Camera
 import sys
 
 class Jeu:
@@ -11,17 +13,19 @@ class Jeu:
         self.ecran= pygame.display.set_mode((1024,768))
         pygame.display.set_caption('nom du jeu')
         self.jeu_encours = True
+        self.world_height = 0
+        self.world_height = 0
+
         self.menu()
-
-
 
     def start(self):
         self.xJoueur, self.yJoueur = 200, 650
         self.tailleJoueur = [32,32]
         self.vitesseJoueurX=0
+        self.camera = Camera(0)
         self.player = Player(self.xJoueur,self.yJoueur, self.tailleJoueur)
-
-        self.enemie = Player(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
+        self.camera.set_focus(self.player)
+        self.enemie = Ennemi(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
 
         self.sol = pygame.Rect(0, 704, 1024, 64)
         self.murg = pygame.Rect(0, 0, 32, 768)
@@ -70,8 +74,14 @@ class Jeu:
         self.ecran.blit(bouton2,(512-text.size("Crédits")[0]/2,587-text.size("Crédits")[1]/2))
         tmx_data = pytmx.util_pygame.load_pygame('test.tmx')
         map_data = pyscroll.data.TiledMapData(tmx_data)
+        
+        
+
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.ecran.get_size())
         self.groupeCalques = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=3)
+        self.world_width = map_layer._half_width*2
+        world_height = map_data.tmx.height
+        print(self.world_width)
         pygame.display.flip()
 
     def credits(self):
@@ -150,10 +160,28 @@ class Jeu:
                 if event.type == pygame.KEYDOWN:
                     if self.player.estMort == False:
                         if event.key == pygame.K_RIGHT:
-                            self.vitesseJoueurX = 5
+                            if self.player.x > self.camera.pos + self.camera.width -100:
+                                if self.camera.pos > self.world_width -50:
+                                    self.vitesseJoueurX = 5
+                                    self.player.direction =0
+                                else:
+                                    self.vitesseJoueurX = 0
+                                    self.player.direction =5
+                            else:
+                                self.vitesseJoueurX = 5
+                                self.player.direction =0
                         # Le personnage se depalace vers la gauche
                         if event.key == pygame.K_LEFT:
-                            self.vitesseJoueurX = -5
+                            if self.player.x < self.camera.pos +100:
+                                if self.camera.pos < 50:
+                                    self.vitesseJoueurX = -5
+                                    self.player.direction =5
+                                else:
+                                    self.vitesseJoueurX = 0
+                                    self.player.direction =-5
+                            else:
+                                self.vitesseJoueurX = -5
+                                self.player.direction =5
                         # Le joueur appui sur escace
                         if event.key == pygame.K_SPACE:
                             self.player.aSauter= True
@@ -167,8 +195,10 @@ class Jeu:
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_RIGHT:
                         self.vitesseJoueurX = 0
+                        self.player.direction =0
                     if event.key == pygame.K_LEFT:
                         self.vitesseJoueurX = 0
+                        self.player.direction =0
 
             if self.scene=="jeu":
                 # Gestion des colisions
@@ -185,7 +215,7 @@ class Jeu:
                 self.player.rect.clamp_ip(self.rect)
 
                 self.player.afficher(self.ecran,(255,255,255))
-                self.enemie.movementenemi()
+                self.enemie.movement()
                 self.enemie.afficher(self.ecran, (255,0,0))
                 # pygame.draw.rect(self.ecran, (255,255,255), self.sol)
 
@@ -217,7 +247,7 @@ class Jeu:
 
         # colisions avec les murs
         if self.murg.colliderect(entite.rect):
-            self.player.rect.x = entite.right
+            entite.rect.x = self.murg.right
         if self.murd.colliderect(entite.rect):
             entite.rect.x = self.murd.left - entite.rect.width
 
