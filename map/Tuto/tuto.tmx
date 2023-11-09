@@ -77,15 +77,15 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2684354590,0,0,0,0,0,0,3221225501,0,0,0,29,0,0,0,3221225501,0,0,0,29,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="7" name="Sol" visible="0">
-  <object id="6" type="sol" x="2.66667" y="706.667" width="2938.67" height="65.3333"/>
-  <object id="8" type="sol" x="1090.67" y="640" width="1400" height="70.6667"/>
-  <object id="10" type="sol" x="1152" y="573.333" width="1281.33" height="72"/>
-  <object id="11" type="sol" x="1217.33" y="513.333" width="1150.67" height="64"/>
-  <object id="13" type="sol" x="1284" y="452" width="1016" height="65.3333"/>
-  <object id="14" type="sol" x="1344" y="384" width="892" height="69.3333"/>
-  <object id="15" type="sol" x="3138.67" y="704" width="318.667" height="66.6667"/>
-  <object id="16" type="sol" x="3646.67" y="705.333" width="512" height="65.3333"/>
+ <objectgroup id="7" name="Sol">
+  <object id="6" type="Sol" x="2.66667" y="706.667" width="2938.67" height="65.3333"/>
+  <object id="8" type="Sol" x="1090.67" y="640" width="1400" height="70.6667"/>
+  <object id="10" type="Sol" x="1152" y="573.333" width="1281.33" height="72"/>
+  <object id="11" type="Sol" x="1217.33" y="513.333" width="1150.67" height="64"/>
+  <object id="13" type="Sol" x="1284" y="452" width="1016" height="65.3333"/>
+  <object id="14" type="Sol" x="1344" y="384" width="892" height="69.3333"/>
+  <object id="15" type="Sol" x="3138.67" y="704" width="318.667" height="66.6667"/>
+  <object id="16" type="Sol" x="3646.67" y="705.333" width="512" height="65.3333"/>
   <object id="17" x="3746.67" y="893.333"/>
  </objectgroup>
  <layer id="4" name="Bulle" width="65" height="12">
