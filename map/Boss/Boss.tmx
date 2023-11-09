@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="9" nextobjectid="3">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="64" tileheight="64" infinite="0" nextlayerid="9" nextobjectid="4">
  <tileset firstgid="1" source="../Niveau 1/sol.tsx"/>
  <tileset firstgid="2" source="../Niveau 1/sol coin.tsx"/>
  <tileset firstgid="3" source="../Niveau 1/barre.tsx"/>
