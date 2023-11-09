@@ -22,6 +22,9 @@ class Jeu:
         self.xJoueur, self.yJoueur = 200, 650
         self.tailleJoueur = [32,32]
         self.vitesseJoueurX=0
+        #gestion du jour nuit
+        self.jacouille = False
+        self.beat=0
         self.camera = Camera(0)
         self.player = Player(self.xJoueur,self.yJoueur, self.tailleJoueur)
         self.camera.set_focus(self.player)
@@ -74,13 +77,9 @@ class Jeu:
         self.ecran.blit(bouton2,(512-text.size("Crédits")[0]/2,587-text.size("Crédits")[1]/2))
         tmx_data = pytmx.util_pygame.load_pygame('test.tmx')
         map_data = pyscroll.data.TiledMapData(tmx_data)
-        
-        
-
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.ecran.get_size())
         self.groupeCalques = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=3)
         self.world_width = map_layer._half_width*2
-        world_height = map_data.tmx.height
         print(self.world_width)
         pygame.display.flip()
 
@@ -229,8 +228,18 @@ class Jeu:
                     del self.enemie
                     self.scene="game over"
                     self.gameover()
+                if self.beat >= 240:
+                    self.beat=0
+                    if self.jacouille:
+                        self.jacouille = False
+                    else:
+                        self.jacouille = True
+                if self.jacouille:
+                    self.ecran.fill((0,0,0))
+                self.beat+=1
+                print(self.jacouille)
                 pygame.display.flip()
-
+                
     #gestion de la gravité
     def gravite_jeu(self):
         self.player.rect.y +=self.gravite[1] + self.player.resistance[1]
