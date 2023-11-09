@@ -1,7 +1,7 @@
 import pygame
 
 class Ennemi (pygame.sprite.Sprite):
-    
+
     def __init__(self,x,y, taille):
         self.x = x
         self.y = y
