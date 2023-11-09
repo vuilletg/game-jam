@@ -2,44 +2,40 @@ import pygame
 import pytmx
 import pyscroll
 from player import Player
-from ennemi import Ennemi
-from camera import Camera
 import sys
 
 class Jeu:
     # Declaration des variables
     scene="menu"
     def __init__(self):
-        self.ecran= pygame.display.set_mode((1024,768))
+        self.ecran = pygame.display.set_mode((1024,768))
         pygame.display.set_caption('nom du jeu')
         self.jeu_encours = True
-        self.world_height = 0
-        self.world_height = 0
-
         self.menu()
+
+
 
     def start(self):
         self.xJoueur, self.yJoueur = 200, 650
-        self.tailleJoueur = [32,32]
-        self.vitesseJoueurX=0
-        #gestion du jour nuit
-        self.jacouille = False
-        self.beat=0
-        self.camera = Camera(0)
+        self.tailleJoueur = [55, 110]
         self.player = Player(self.xJoueur,self.yJoueur, self.tailleJoueur)
-        self.camera.set_focus(self.player)
-        self.enemie = Ennemi(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
+        self.player.vitesseJoueurX = 0
 
-        self.sol = pygame.Rect(0, 704, 1024, 64)
-        self.murg = pygame.Rect(0, 0, 32, 768)
-        self.murd = pygame.Rect(998, 0, 32, 768)
-        self.plafond = pygame.Rect(0, 0, 1024, 64)
+        self.enemie = Player(self.xJoueur+200,self.yJoueur, self.tailleJoueur)
 
-        self.plateformes = []
+        sol = pygame.Rect(0, 704, 1024, 64)
+        murg = pygame.Rect(0, 0, 32, 768)
+        murd = pygame.Rect(998, 0, 32, 768)
+        plafond = pygame.Rect(0, 0, 1024, 64)
         plateforme1 = pygame.Rect(320, 640, 240, 64)
         plateforme2 = pygame.Rect(624, 516, 192, 96)
+        self.plateformes = []
         self.plateformes.append(plateforme1)
         self.plateformes.append(plateforme2)
+        self.plateformes.append(murg)
+        self.plateformes.append(murd)
+        self.plateformes.append(sol)
+        self.plateformes.append(plafond)
 
         self.gravite = (0,10)
         self.resistance = (0,0)
@@ -47,10 +43,6 @@ class Jeu:
         self.colision = False
         self.horloge = pygame.time.Clock()
         self.fps = 60
-
-
-
-
         # pcharger la carte tiled
 
     def menu(self):
@@ -79,8 +71,6 @@ class Jeu:
         map_data = pyscroll.data.TiledMapData(tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.ecran.get_size())
         self.groupeCalques = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=3)
-        self.world_width = map_layer._half_width*2
-        print(self.world_width)
         pygame.display.flip()
 
     def credits(self):
@@ -159,28 +149,10 @@ class Jeu:
                 if event.type == pygame.KEYDOWN:
                     if self.player.estMort == False:
                         if event.key == pygame.K_RIGHT:
-                            if self.player.x > self.camera.pos + self.camera.width -100:
-                                if self.camera.pos > self.world_width -50:
-                                    self.vitesseJoueurX = 5
-                                    self.player.direction =0
-                                else:
-                                    self.vitesseJoueurX = 0
-                                    self.player.direction =5
-                            else:
-                                self.vitesseJoueurX = 5
-                                self.player.direction =0
+                            self.player.vitesseJoueurX = 5
                         # Le personnage se depalace vers la gauche
                         if event.key == pygame.K_LEFT:
-                            if self.player.x < self.camera.pos +100:
-                                if self.camera.pos < 50:
-                                    self.vitesseJoueurX = -5
-                                    self.player.direction =5
-                                else:
-                                    self.vitesseJoueurX = 0
-                                    self.player.direction =-5
-                            else:
-                                self.vitesseJoueurX = -5
-                                self.player.direction =5
+                            self.player.vitesseJoueurX = -5
                         # Le joueur appui sur escace
                         if event.key == pygame.K_SPACE:
                             self.player.aSauter= True
@@ -193,11 +165,9 @@ class Jeu:
                 # evenements quand une touche est relacher
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_RIGHT:
-                        self.vitesseJoueurX = 0
-                        self.player.direction =0
+                        self.player.vitesseJoueurX = 0
                     if event.key == pygame.K_LEFT:
-                        self.vitesseJoueurX = 0
-                        self.player.direction =0
+                        self.player.vitesseJoueurX = 0
 
             if self.scene=="jeu":
                 # Gestion des colisions
@@ -205,21 +175,23 @@ class Jeu:
                 self.detection_collisions(self.enemie)
 
                 # fonction d'appel du saut sous condtions
-                if self.player.colision and self.player.aSauter and self.player.nbsaut<2:
+                if self.player.colision and self.player.aSauter and self.player.nbsaut < 1:
                     self.player.sauter()
 
                 # Appels des fonctions
-                self.player.move(self.vitesseJoueurX)
+                self.player.move(self.player.vitesseJoueurX)
                 self.gravite_jeu()
                 self.player.rect.clamp_ip(self.rect)
+                if not self.player.colision:
+                    self.player.etat = "dans_les_airs"
+                elif self.player.vitesseJoueurX != 0:
+                    self.player.etat = "en_cours"
+                else:
+                    self.player.etat = "immobile"
 
-                self.player.afficher(self.ecran,(255,255,255))
-                self.enemie.movement()
-                self.enemie.afficher(self.ecran, (255,0,0))
-                # pygame.draw.rect(self.ecran, (255,255,255), self.sol)
-
-                # pygame.draw.rect(self.ecran,(255,255,255),self.rect,1)
-
+                self.player.afficher(self.ecran)
+                self.enemie.movementenemi()
+                self.enemie.afficher(self.ecran)
                 self.horloge.tick(self.fps)
                 if self.player.rect.colliderect(self.enemie.rect):
                     print("game over")
@@ -228,18 +200,8 @@ class Jeu:
                     del self.enemie
                     self.scene="game over"
                     self.gameover()
-                if self.beat >= 240:
-                    self.beat=0
-                    if self.jacouille:
-                        self.jacouille = False
-                    else:
-                        self.jacouille = True
-                if self.jacouille:
-                    self.ecran.fill((0,0,0))
-                self.beat+=1
-                print(self.jacouille)
                 pygame.display.flip()
-                
+
     #gestion de la gravité
     def gravite_jeu(self):
         self.player.rect.y +=self.gravite[1] + self.player.resistance[1]
@@ -247,27 +209,12 @@ class Jeu:
 
 
     def detection_collisions(self, entite):
-        if self.sol.colliderect(entite.rect):
-            entite.resistance = (0, -10)
-            entite.colision = True
-            entite.nbsaut = 0
-        else:
-            entite.resistance = (0, 0)
-
-        # colisions avec les murs
-        if self.murg.colliderect(entite.rect):
-            entite.rect.x = self.murg.right
-        if self.murd.colliderect(entite.rect):
-            entite.rect.x = self.murd.left - entite.rect.width
-
-           # collisions avec les plateformes du niveau
         for plateforme in self.plateformes:
             if entite.rect.colliderect(plateforme):
                 distancemin = min(abs(entite.rect.bottom - plateforme.top),
                                   abs(entite.rect.top - plateforme.bottom),
                                   abs(entite.rect.right - plateforme.left),
                                   abs(entite.rect.left - plateforme.right))
-
                 if distancemin == abs(entite.rect.bottom - plateforme.top):
                     entite.colision = True  # pour reset le(s) saut
                     entite.nbsaut = 0
@@ -283,7 +230,7 @@ class Jeu:
                     entite.rect.x = plateforme.right
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     pygame.init()
     Jeu().Boucle_principale()
     pygame.quit()
