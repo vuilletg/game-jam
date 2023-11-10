@@ -181,6 +181,67 @@ class Jeu:
         self.rect = pygame.Rect(0,0, 1024, 768)
 
 ##    def niveau2(self):
+    def niveau2(self):
+        self.test=TiledMap.TiledMap("map/Niveau 1/niveau1.tmx")
+        self.test.scroll(self.ecran,self.screen_scroll)
+        self.xJoueur, self.yJoueur = 200, 650
+        self.tailleJoueur = [55, 110]
+        self.player = Player(self.xJoueur,self.yJoueur, self.tailleJoueur,True)
+        self.player.vitesseJoueurX = 0
+
+        self.enemie = Player(self.xJoueur+200,self.yJoueur+55, [55,64],False)
+
+        self.murg_lvl2 = pygame.Rect(0, 0, 64, 768)
+        self.biblioteque1 = pygame.Rect(124, 191, 195, 571)
+        self.biblioteque2 = pygame.Rect(959, 318, 191, 444)
+        self.biblioteque3 = pygame.Rect(2752, 381, 190, 383)
+        self.biblioteque4 = pygame.Rect(3839, 447, 192, 319)
+        self.biblioteque5 = pygame.Rect(4608, 317, 189, 448)
+        self.biblioteque6 = pygame.Rect(4990, 383, 255, 378)
+        self.biblioteque7 = pygame.Rect(5887, 317, 449, 450)
+        self.livre1 = pygame.Rect(391, 296, 119, 10)
+        self.livre2 = pygame.Rect(582, 359, 119, 10)
+        self.livre3 = pygame.Rect(776, 360, 119, 10)
+        self.livre4 = pygame.Rect(1225, 294, 119, 10)
+        self.livre5 = pygame.Rect(1415, 231, 119, 10)
+        self.livre6 = pygame.Rect(1606, 231, 119, 10)
+        self.livre7 = pygame.Rect(2119, 358, 119, 10)
+        self.livre8 = pygame.Rect(2375, 485, 119, 10)
+        self.livre9 = pygame.Rect(2566, 421, 119, 10)
+        self.livre10 = pygame.Rect(3080, 359, 119, 10)
+        self.livre11 = pygame.Rect(3271, 296, 119, 10)
+        self.livre12= pygame.Rect(3528, 294, 119, 10)
+        self.livre13 = pygame.Rect(4105, 423, 119, 10)
+        self.livre14= pygame.Rect(4359, 358, 119, 10)
+        self.livre12= pygame.Rect(5322, 422, 119, 10)
+        self.livre13 = pygame.Rect(5507, 360, 119, 10)
+        self.livre14= pygame.Rect(5702, 358, 119, 10)
+
+        self.plateformes = []
+
+        self.plateformes.append(self.biblioteque1)
+        self.plateformes.append(self.biblioteque2)
+        self.plateformes.append(self.biblioteque3)
+        self.plateformes.append(self.biblioteque4)
+        self.plateformes.append(self.biblioteque5)
+        self.plateformes.append(self.biblioteque6)
+        self.plateformes.append(self.biblioteque7)
+        self.plateformes.append(self.livre1)
+        self.plateformes.append(self.livre3)
+        self.plateformes.append(self.livre4)
+        self.plateformes.append(self.livre5)
+        self.plateformes.append(self.livre6)
+        self.plateformes.append(self.livre7)
+        self.plateformes.append(self.livre8)
+        self.plateformes.append(self.livre9)
+        self.plateformes.append(self.livre10)
+        self.plateformes.append(self.livre11)
+        self.plateformes.append(self.livre12)
+        self.plateformes.append(self.livre13)
+        self.plateformes.append(self.livre14)
+
+        self.gravite = (0,10)
+        self.resistance = (0,0)
 
     def menu(self):
 ##        pygame.mixer.music.load("Musique_menu.mp3")
@@ -207,6 +268,7 @@ class Jeu:
         self.ecran.blit(surf3,(362,550))
         self.ecran.blit(bouton2,(512-text.size("Crédits")[0]/2,587-text.size("Crédits")[1]/2))
         pygame.display.flip()
+    
 
     def credits(self):
         self.ecran.fill((0, 0, 0))
@@ -407,7 +469,7 @@ class Jeu:
                 # pygame.draw.rect(self.ecran,(255,255,255),self.rect,1)
 
                 self.horloge.tick(self.fps)
-                if self.player.rect.colliderect(self.enemie.rect):
+                if self.player.rect.centery == 0:
                     print("game over")
                     self.screen_scroll=0
                     self.vitesse_scroll=0
@@ -430,6 +492,13 @@ class Jeu:
                         self.niveau="niveau 1"
                         self.niveau1()
                 if self.niveau=="niveau 1":
+                    if self.player.rect.colliderect(self.plateformes[8]):
+                        del self.player
+                        del self.enemie
+                        self.screen_scroll=0
+                        self.vitesse_scroll=0
+                        self.niveau="niveau 2"
+                        self.niveau2()
                     if self.beat >= 240:
                         self.beat=0
                         if self.jacouille:
